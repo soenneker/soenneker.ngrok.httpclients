@@ -1,20 +1,19 @@
 using Soenneker.ngrok.HttpClients.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.ngrok.HttpClients.Tests;
 
-[Collection("Collection")]
-public sealed class ngrokOpenApiHttpClientTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class ngrokOpenApiHttpClientTests : HostedUnitTest
 {
     private readonly IngrokOpenApiHttpClient _httpclient;
 
-    public ngrokOpenApiHttpClientTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public ngrokOpenApiHttpClientTests(Host host) : base(host)
     {
         _httpclient = Resolve<IngrokOpenApiHttpClient>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
