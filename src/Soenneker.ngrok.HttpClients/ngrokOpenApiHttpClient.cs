@@ -25,6 +25,11 @@ public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
         _config = config;
     }
 
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task containing the result of the operation.</returns>
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
         return _httpClientCache.Get(nameof(ngrokOpenApiHttpClient), (config: _config, baseUrl: _config["ngrok:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
@@ -45,11 +50,18 @@ public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
         }, cancellationToken);
     }
 
+    /// <summary>
+    /// Releases resources used by the current instance.
+    /// </summary>
     public void Dispose()
     {
         _httpClientCache.RemoveSync(nameof(ngrokOpenApiHttpClient));
     }
 
+    /// <summary>
+    /// Asynchronously releases resources used by the current instance.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
         return _httpClientCache.Remove(nameof(ngrokOpenApiHttpClient));
