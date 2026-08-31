@@ -6,14 +6,14 @@ using System.Threading;
 namespace Soenneker.ngrok.HttpClients.Abstract;
 
 /// <summary>
-/// A .NET thread-safe singleton HttpClient for 
+/// Provides a cached HTTP client with ngrok API authentication and version headers.
 /// </summary>
-public interface IngrokOpenApiHttpClient: IDisposable, IAsyncDisposable
+public interface IngrokOpenApiHttpClient : IDisposable, IAsyncDisposable
 {
     /// <summary>
-    /// Gets the value.
+    /// Gets the configured ngrok HTTP client.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task containing the result of the operation.</returns>
+    /// <returns>The cached client.</returns>
     ValueTask<HttpClient> Get(CancellationToken cancellationToken = default);
 }

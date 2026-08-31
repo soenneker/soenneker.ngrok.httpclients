@@ -11,11 +11,11 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.ngrok.HttpClients;
 
-///<inheritdoc cref="IngrokOpenApiHttpClient"/>
 public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
+    private readonly string _clientId = $"{nameof(ngrokOpenApiHttpClient)}:{Guid.NewGuid():N}";
 
     private const string _prodBaseUrl = "https://api.ngrok.com";
 
@@ -25,19 +25,15 @@ public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
         _config = config;
     }
 
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task containing the result of the operation.</returns>
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(ngrokOpenApiHttpClient), (config: _config, baseUrl: _config["ngrok:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_clientId, (config: _config, baseUrl: _config["ngrok:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("ngrok:ApiKey");
             string authHeaderName = state.config["ngrok:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["ngrok:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
+            string apiVersion = state.config["ngrok:ApiVersion"] ?? "2";
 
             return new HttpClientOptions
             {
@@ -45,25 +41,19 @@ public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
                 DefaultRequestHeaders = new Dictionary<string, string>
                 {
                     {authHeaderName, authHeaderValue},
+                    {"ngrok-version", apiVersion},
                 }
             };
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(ngrokOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_clientId);
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(ngrokOpenApiHttpClient));
+        return _httpClientCache.Remove(_clientId);
     }
 }
