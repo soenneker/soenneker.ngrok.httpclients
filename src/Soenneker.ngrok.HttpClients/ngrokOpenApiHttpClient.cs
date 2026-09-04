@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.ngrok.HttpClients;
 
+/// <inheritdoc cref="IngrokOpenApiHttpClient" />
 public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
