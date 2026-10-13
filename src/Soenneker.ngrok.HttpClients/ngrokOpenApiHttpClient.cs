@@ -30,7 +30,7 @@ public sealed class ngrokOpenApiHttpClient : IngrokOpenApiHttpClient
     {
         return _httpClientCache.Get(_clientId, (config: _config, baseUrl: _config["ngrok:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("ngrok:ApiKey");
+            var apiKey = state.config.GetStringStrict("ngrok:ApiKey");
             string authHeaderName = state.config["ngrok:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["ngrok:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
